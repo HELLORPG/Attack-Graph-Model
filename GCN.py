@@ -4,7 +4,8 @@
 """
 
 import torch
-import OpFile
+import OpData
+from torch_geometric.data import Data   # 用于承载Graph Data
 
 
 class Classifier(torch.nn.Module):

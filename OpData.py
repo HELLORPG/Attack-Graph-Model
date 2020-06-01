@@ -5,6 +5,7 @@
 
 import OpFile
 import numpy as np
+from CONFIG import CONFIG
 
 
 def GetLabels() -> np.matrix:
@@ -12,4 +13,36 @@ def GetLabels() -> np.matrix:
     :return: 返回labels，采用np.matrix格式统一
     """
     labels_ndarray = OpFile.ReadLabels()
+    labels_matrix = labels_ndarray.reshape((len(labels_ndarray), 1))
+    return labels_matrix
 
+
+def GetFeatures() -> np.matrix:
+    features_ndarray = OpFile.ReadFeatures()
+    features_matrix = features_ndarray.reshape((len(features_ndarray), CONFIG.FeatureLen()))
+    return features_matrix
+
+
+def GetAdj() -> np.matrix:
+    adj_csr = OpFile.ReadAdj()
+    adj_coo = adj_csr.tocoo()
+    links_num = adj_coo.getnnz()
+    # print(adj_coo.getnnz())     # 通过这行语句可以查看非零元素的个数
+    # 这里整个数据如果采用密集矩阵的形式，约有2.56TB
+    src = adj_coo.row
+    dst = adj_coo.col
+    links = list()
+    links.append(src.tolist())
+    links.append(dst.tolist())
+    edges = np.mat(links)
+    assert edges.shape == (2, links_num)
+    return edges
+
+
+
+def test():
+    # print(GetLabels())
+    # print(GetFeatures())
+    GetAdj()
+
+# test()

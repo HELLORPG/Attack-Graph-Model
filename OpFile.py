@@ -1,5 +1,6 @@
 import pickle   # 用于读取pkl文件
 import numpy as np
+import scipy.sparse.csr
 
 
 def ReadPkl(filename: str):
@@ -27,8 +28,13 @@ def ReadFeatures() -> np.ndarray:
     return ReadPkl("Data/experimental_features.pkl")
 
 
+def ReadAdj() -> scipy.sparse.csr.csr_matrix:
+    adj = ReadPkl("Data/experimental_adj.pkl")
+    return adj
+
+
 # ReadPkl("Data/experimental_adj.pkl")
 # ReadPkl("Data/experimental_features.pkl")
 # ReadPkl("Data/experimental_train.pkl")
 
-
+ReadAdj()
