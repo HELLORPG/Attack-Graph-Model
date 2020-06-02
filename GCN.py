@@ -34,9 +34,10 @@ class GCNClassifier(torch.nn.Module):
 # class Classifier(MessagePassing):
     def __init__(self):
         super(GCNClassifier, self).__init__()  # 调用父类初始化
-        self.conv1 = GCNConv(CONFIG.FeatureLen(), 80)
-        self.conv2 = GraphConv(80, 50)
-        self.lin1 = torch.nn.Linear(50, CONFIG.ClassNum())
+        self.conv1 = GCNConv(CONFIG.FeatureLen(), 200)
+        self.conv2 = GCNConv(200, 80)
+        self.conv3 = GCNConv(80, CONFIG.ClassNum())
+        # self.lin1 = torch.nn.Linear(50, CONFIG.ClassNum())
         # self.lin2 = torch.nn.Linear(10, 20)
         # self.lin3 = torch.nn.Linear(20, CONFIG.ClassNum())
 
@@ -57,7 +58,10 @@ class GCNClassifier(torch.nn.Module):
 
         x = F.leaky_relu(x)
         x = F.dropout(x, training=self.training)
-        x = self.lin1(x)
+
+        x = self.conv3(x, edges)
+        # x = F.leaky_relu(x)
+        # x = self.lin1(x)
         # x = F.leaky_relu(x)
         # x = self.lin2(x)
         # x = F.leaky_relu(x)

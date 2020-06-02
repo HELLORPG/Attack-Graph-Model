@@ -33,8 +33,20 @@ def ReadAdj() -> scipy.sparse.csr.csr_matrix:
     return adj
 
 
+def TestOutput():
+    adj = scipy.sparse.coo_matrix(([], ([], [])), shape=(1, 593487))
+    adj = adj.tocsr()
+    with open("adj.pkl", 'wb') as f:  # 将数据写入pkl文件
+        pickle.dump(adj, f)
+    features = np.zeros((1, 100))
+    np.save("feature.npy", features)
+
+
 # ReadPkl("Data/experimental_adj.pkl")
 # ReadPkl("Data/experimental_features.pkl")
 # ReadPkl("Data/experimental_train.pkl")
 
-ReadAdj()
+
+if __name__ == '__main__':
+        # /ReadAdj()
+    TestOutput()

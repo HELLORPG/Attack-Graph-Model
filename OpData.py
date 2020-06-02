@@ -27,6 +27,7 @@ def GetAdj() -> np.matrix:
     adj_csr = OpFile.ReadAdj()
     adj_coo = adj_csr.tocoo()
     links_num = adj_coo.getnnz()
+    print(links_num)
     # print(adj_coo.getnnz())     # 通过这行语句可以查看非零元素的个数
     # 这里整个数据如果采用密集矩阵的形式，约有2.56TB
     src = adj_coo.row
@@ -40,13 +41,16 @@ def GetAdj() -> np.matrix:
 
 
 
-def test():
+if __name__ == '__main__':
     # print(GetLabels())
     # print(GetFeatures())
+    # GetAdj()
+    # print("Min Class Label: %d, Max Class Label: %d" % (GetLabels().min(), GetLabels().max()))
+    # print("OpData Test Finish")
+    y = GetFeatures()
+    yty = np.dot(y.T, y)
+    print("yty.shape =", yty.shape)
+    lamda, w = np.linalg.eig(yty)
+    lamda.sort()
+    print(lamda)
     GetAdj()
-
-
-if __name__ == '__main__':
-    test()
-    print("Min Class Label: %d, Max Class Label: %d" % (GetLabels().min(), GetLabels().max()))
-    print("OpData Test Finish")
