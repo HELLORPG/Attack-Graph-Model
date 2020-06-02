@@ -26,7 +26,7 @@ def GraphData() -> Data:
     # edges, _ = torch_geometric.utils.add_remaining_self_loops(edges)
     # print(edges.shape)
     data = Data(x=X, y=Y, edge_index=edges)
-    data.to(torch.device('cpu'))
+    data.to(torch.device('cuda'))
     return data
 
 
@@ -34,10 +34,10 @@ class GCNClassifier(torch.nn.Module):
 # class Classifier(MessagePassing):
     def __init__(self):
         super(GCNClassifier, self).__init__()  # 调用父类初始化
-        self.conv1 = GCNConv(CONFIG.FeatureLen(), 200)
-        self.conv2 = GCNConv(200, 80)
-        self.conv3 = GCNConv(80, CONFIG.ClassNum())
-        # self.lin1 = torch.nn.Linear(50, CONFIG.ClassNum())
+        self.conv1 = GCNConv(CONFIG.FeatureLen(), 80)
+        self.conv2 = GCNConv(80, 40)
+        self.conv3 = GCNConv(40, 50)
+        self.lin1 = torch.nn.Linear(50, CONFIG.ClassNum())
         # self.lin2 = torch.nn.Linear(10, 20)
         # self.lin3 = torch.nn.Linear(20, CONFIG.ClassNum())
 
@@ -60,8 +60,8 @@ class GCNClassifier(torch.nn.Module):
         x = F.dropout(x, training=self.training)
 
         x = self.conv3(x, edges)
-        # x = F.leaky_relu(x)
-        # x = self.lin1(x)
+        x = F.leaky_relu(x)
+        x = self.lin1(x)
         # x = F.leaky_relu(x)
         # x = self.lin2(x)
         # x = F.leaky_relu(x)
@@ -72,12 +72,12 @@ class GCNClassifier(torch.nn.Module):
 
 if __name__ == '__main__':
     data = GraphData()
-    device = torch.device('cpu')
+    device = torch.device('cuda')
     model = GCNClassifier().to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
 
     model.train()
-    for i in range(0, 1000):
+    for i in range(0, 5000):
         optimizer.zero_grad()
         out = model(data)[:data.y.shape[0], :]
         loss = F.nll_loss(out, data.y.squeeze())
