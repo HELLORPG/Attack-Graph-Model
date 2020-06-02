@@ -11,3 +11,10 @@ class CONFIG:
         :return: 返回特征向量的长度（也即是维度）
         """
         return 100
+
+    @staticmethod
+    def ClassNum():
+        """
+        :return: 返回类别的总数，根据OpData中的测试代码得到，最小Label=0，最大Label=17
+        """
+        return 18

@@ -45,4 +45,8 @@ def test():
     # print(GetFeatures())
     GetAdj()
 
-# test()
+
+if __name__ == '__main__':
+    test()
+    print("Min Class Label: %d, Max Class Label: %d" % (GetLabels().min(), GetLabels().max()))
+    print("OpData Test Finish")
