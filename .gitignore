@@ -5,3 +5,5 @@ __pycache__/
 Submit/
 *.pkl
 *.npy
+Models/
+*.pyc
