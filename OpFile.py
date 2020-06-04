@@ -73,5 +73,4 @@ def TestOutput():
 
 
 if __name__ == '__main__':
-        # /ReadAdj()
     TestOutput()

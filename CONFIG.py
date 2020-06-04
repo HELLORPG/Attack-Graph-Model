@@ -18,3 +18,15 @@ class CONFIG:
         :return: 返回类别的总数，根据OpData中的测试代码得到，最小Label=0，最大Label=17
         """
         return 18
+
+    @staticmethod
+    def TargetBegin():
+        return 543486
+
+    @staticmethod
+    def TargetEnd():
+        return 593486
+
+    @staticmethod
+    def AttackRate():
+        return 1
