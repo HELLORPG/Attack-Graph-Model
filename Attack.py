@@ -90,6 +90,7 @@ class Attacker(torch.nn.Module):
 
 def load_add_features():
     data = np.load("feature.npy")
+    data = data.astype(np.float32)
     return data
 
 
@@ -122,12 +123,16 @@ def init_add_edges() -> torch.tensor:
 
 
 def fix_features(features: torch.tensor) -> torch.tensor:
-    for line in features.data:
-        for item in line:
-            if item <= -100.0:
-                item = -99.9999
-            if item >= 100.0:
-                item = 99.9999
+    features = features.cpu()
+    features = features.numpy()
+    for i in range(0, features.shape[0]):
+        for j in range(0, features.shape[1]):
+            if features[i][j] <= -100.0:
+                features[i][j] = -99.9999
+            if features[i][j] >= 100.0:
+                features[i][j] = 99.9999
+    features = torch.from_numpy(features)
+    features = features.to(device)
     return features
 
 
