@@ -3,6 +3,8 @@ import GCN
 import torch_geometric
 import OpData
 
+import numpy as np
+
 from GCN import GCNClassifier   # 一定需要引入这个class才能load model
 
 from CONFIG import CONFIG
@@ -26,7 +28,7 @@ def GraphData() -> Data:
     # edges, _ = torch_geometric.utils.add_remaining_self_loops(edges)
     # print(edges.shape)
     data = Data(x=X, y=Y, edge_index=edges)
-    data.to(torch.device('cpu'))
+    data.to(device)
     return data
 
 
@@ -86,6 +88,11 @@ class Attacker(torch.nn.Module):
         return self.X.grad
 
 
+def load_add_features():
+    data = np.load("feature.npy")
+    return data
+
+
 def init_add_edges() -> torch.tensor:
     """
     :return: 用这个函数来初始化加入的邻接矩阵
@@ -114,8 +121,14 @@ def init_add_edges() -> torch.tensor:
     return torch.tensor(edges, dtype=torch.long).to(device)
 
 
-# def fix_features(features: torch.tensor) -> torch.tensor:
-
+def fix_features(features: torch.tensor) -> torch.tensor:
+    for line in features.data:
+        for item in line:
+            if item <= -100.0:
+                item = -99.9999
+            if item >= 100.0:
+                item = 99.9999
+    return features
 
 
 if __name__ == '__main__':
@@ -160,4 +173,7 @@ if __name__ == '__main__':
         # print("x grad is", x_grad)
         with torch.no_grad():
             add_features = add_features + CONFIG.AttackRate() * x_grad
-            print("features change to:", add_features)
+            add_features = fix_features(add_features)
+            print("features change a turn")
+            output = add_features.cpu()
+            np.save("feature.npy", output.numpy())

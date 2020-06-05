@@ -72,5 +72,11 @@ def TestOutput():
 # ReadPkl("Data/experimental_train.pkl")
 
 
+def readNpy(filename: str):
+    data = np.load(filename)
+    print(data)
+
+
 if __name__ == '__main__':
-    TestOutput()
+    # TestOutput()
+    readNpy("feature.npy")
