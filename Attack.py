@@ -211,7 +211,6 @@ def add_edges_by_class(labels: torch.tensor) -> torch.tensor:
             dst = CONFIG.TargetBegin() + cut[i][j]
             assert (src >= CONFIG.TargetEnd()) and (src < CONFIG.TargetEnd() + 500)
             assert (dst >= CONFIG.TargetBegin()) and (dst < CONFIG.TargetEnd())
-            print(src, dst)
             x.append(src)
             y.append(dst)
             x.append(dst)
@@ -221,10 +220,17 @@ def add_edges_by_class(labels: torch.tensor) -> torch.tensor:
             coo_y.append(dst)
             data.append(1)
 
+    for i in range(CONFIG.TargetBegin(), CONFIG.TargetEnd()):
+        if i in coo_y:
+            continue
+        else:
+            print("ERROR!!!", i)
+    print("OK!")
+
     # 保存邻接矩阵形式：
     adj = scipy.sparse.coo_matrix((data, (coo_x, coo_y)), shape=(500, 593986))
     adj = adj.tocsr()
-    print(adj.data)
+    # print(adj)
     with open("adj.pkl", 'wb') as f:  # 将数据写入pkl文件
         pickle.dump(adj, f)
 
@@ -232,7 +238,7 @@ def add_edges_by_class(labels: torch.tensor) -> torch.tensor:
     edges = []
     edges.append(x)
     edges.append(y)
-    print(edges)
+    # print(edges)
     return torch.tensor(edges, dtype=torch.long).to(device)
 
 
