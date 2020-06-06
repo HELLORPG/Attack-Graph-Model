@@ -29,4 +29,4 @@ class CONFIG:
 
     @staticmethod
     def AttackRate():
-        return 1
+        return 100

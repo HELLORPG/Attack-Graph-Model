@@ -7,3 +7,4 @@ Submit/
 *.npy
 Models/
 *.pyc
+*.csv

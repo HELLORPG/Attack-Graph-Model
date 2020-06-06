@@ -2,6 +2,9 @@ import torch
 import GCN
 import torch_geometric
 import OpData
+import ClusteringTarget
+import scipy.sparse.csr
+import pickle
 
 import numpy as np
 
@@ -96,6 +99,7 @@ def load_add_features():
 
 def init_add_edges() -> torch.tensor:
     """
+    这是一个最基础的初始化方式，1节点连接1~100测试节点，2连接201~400测试节点，直到50000为止
     :return: 用这个函数来初始化加入的邻接矩阵
     """
     x = []
@@ -115,6 +119,43 @@ def init_add_edges() -> torch.tensor:
             data.append(1)
             data.append(1)
     assert len(x) == len(y) == len(data)
+    # 将其化为tensor
+    edges = []
+    edges.append(x)
+    edges.append(y)
+    return torch.tensor(edges, dtype=torch.long).to(device)
+
+
+def add_edges_by_cluster():
+    cut = ClusteringTarget.cut_cluster_by_100()
+    x = []
+    y = []
+
+    coo_x = []
+    coo_y = []
+    data = []
+
+    for i in range(0, 500):
+        for j in range(0, 100):
+            src = CONFIG.TargetEnd() + i
+            dst = CONFIG.TargetBegin() + cut[i][j]
+            assert (src >= CONFIG.TargetEnd()) and (src < CONFIG.TargetEnd() + 500)
+            assert (dst >= CONFIG.TargetBegin()) and (dst < CONFIG.TargetEnd())
+            x.append(src)
+            y.append(dst)
+            x.append(dst)
+            y.append(src)
+
+            coo_x.append(src - CONFIG.TargetEnd())
+            coo_y.append(dst)
+            data.append(1)
+
+    # 保存邻接矩阵形式：
+    adj = scipy.sparse.coo_matrix((data, (coo_x, coo_y)), shape=(500, 593986))
+    adj = adj.tocsr()
+    with open("adj.pkl", 'wb') as f:  # 将数据写入pkl文件
+        pickle.dump(adj, f)
+
     # 将其化为tensor
     edges = []
     edges.append(x)
@@ -163,7 +204,8 @@ if __name__ == '__main__':
     add_features = torch.zeros((500, 100), requires_grad=False).to(device)
     attack_model.loadX(add_features)
     # 将需要添加的邻接矩阵edges载入模型
-    add_edges = init_add_edges()
+    # add_edges = init_add_edges()
+    add_edges = add_edges_by_cluster()
     attack_model.loadEdges(add_edges)
 
     # 下面是attack的过程
