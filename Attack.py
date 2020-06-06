@@ -163,6 +163,79 @@ def add_edges_by_cluster():
     return torch.tensor(edges, dtype=torch.long).to(device)
 
 
+def add_edges_by_class(labels: torch.tensor) -> torch.tensor:
+    labels_cpu = labels.cpu()
+    labels_list = labels_cpu.numpy().tolist()
+    cut = [[]]
+
+    # class_divide用于将索引划入不同的类别
+    class_divide = []
+    for i in range(0, CONFIG.ClassNum()):
+        class_divide.append([])
+
+    for i in range(0, len(labels_list)):
+        class_divide[labels_list[i]].append(i)
+
+    remain_data = []
+    cut_i = 0
+
+    for i in range(0, CONFIG.ClassNum()):
+        # 用于遍历cluster
+        for j in range(0, len(class_divide[i])):
+            if j < int(len(class_divide[i]) / 100) * 100:
+                cut[cut_i].append(class_divide[i][j])
+                if len(cut[cut_i]) is 100:
+                    cut_i += 1
+                    cut.append([])
+            else:
+                # print(j)
+                remain_data.append(class_divide[i][j])
+    for r in remain_data:
+        cut[cut_i].append(r)
+        # print(len(cut))
+        if (len(cut[cut_i]) is 100) and (len(cut) != 500):
+            cut_i += 1
+            cut.append([])
+    # 此时，cut里面就是分割好的对照关系
+
+    x = []
+    y = []
+
+    coo_x = []
+    coo_y = []
+    data = []
+
+    for i in range(0, 500):
+        for j in range(0, 100):
+            src = CONFIG.TargetEnd() + i
+            dst = CONFIG.TargetBegin() + cut[i][j]
+            assert (src >= CONFIG.TargetEnd()) and (src < CONFIG.TargetEnd() + 500)
+            assert (dst >= CONFIG.TargetBegin()) and (dst < CONFIG.TargetEnd())
+            print(src, dst)
+            x.append(src)
+            y.append(dst)
+            x.append(dst)
+            y.append(src)
+
+            coo_x.append(src - CONFIG.TargetEnd())
+            coo_y.append(dst)
+            data.append(1)
+
+    # 保存邻接矩阵形式：
+    adj = scipy.sparse.coo_matrix((data, (coo_x, coo_y)), shape=(500, 593986))
+    adj = adj.tocsr()
+    print(adj.data)
+    with open("adj.pkl", 'wb') as f:  # 将数据写入pkl文件
+        pickle.dump(adj, f)
+
+    # 将其化为tensor
+    edges = []
+    edges.append(x)
+    edges.append(y)
+    print(edges)
+    return torch.tensor(edges, dtype=torch.long).to(device)
+
+
 def fix_features(features: torch.tensor) -> torch.tensor:
     features = features.cpu()
     features = features.numpy()
@@ -205,7 +278,8 @@ if __name__ == '__main__':
     attack_model.loadX(add_features)
     # 将需要添加的邻接矩阵edges载入模型
     # add_edges = init_add_edges()
-    add_edges = add_edges_by_cluster()
+    # add_edges = add_edges_by_cluster()
+    add_edges = add_edges_by_class(target_labels)
     attack_model.loadEdges(add_edges)
 
     # 下面是attack的过程

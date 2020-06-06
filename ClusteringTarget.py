@@ -46,7 +46,7 @@ def cut_cluster_by_100() -> list:
         class_divide[cluster[c]].append(c)
     # print(class_divide)
 
-    remain_data =[]     # 用来记录遗留下的数据，用于二次划分
+    remain_data = []     # 用来记录遗留下的数据，用于二次划分
     cut_i = 0
 
     for i in range(0, CONFIG.ClassNum()):
