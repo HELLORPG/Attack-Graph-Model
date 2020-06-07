@@ -67,6 +67,7 @@ class Attacker(torch.nn.Module):
         else:
             edges = torch.cat((data.edge_index, self.edges), 1)     # 横向叠加
         edges, _ = torch_geometric.utils.add_remaining_self_loops(edges)
+        # print(edges)
         if self.attack is False:
             x = data.x
         else:
@@ -220,12 +221,12 @@ def add_edges_by_class(labels: torch.tensor) -> torch.tensor:
             coo_y.append(dst)
             data.append(1)
 
-    for i in range(CONFIG.TargetBegin(), CONFIG.TargetEnd()):
-        if i in coo_y:
-            continue
-        else:
-            print("ERROR!!!", i)
-    print("OK!")
+    # for i in range(CONFIG.TargetBegin(), CONFIG.TargetEnd()):
+    #     if i in coo_y:
+    #         continue
+    #     else:
+    #         print("ERROR!!!", i)
+    # print("OK!")
 
     # 保存邻接矩阵形式：
     adj = scipy.sparse.coo_matrix((data, (coo_x, coo_y)), shape=(500, 593986))

@@ -78,5 +78,5 @@ def readNpy(filename: str):
 
 
 if __name__ == '__main__':
-    # TestOutput()
-    readNpy("feature.npy")
+    TestOutput()
+    # readNpy("feature.npy")
