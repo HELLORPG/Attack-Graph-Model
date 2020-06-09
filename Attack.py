@@ -284,9 +284,9 @@ if __name__ == '__main__':
     add_features = torch.zeros((500, 100), requires_grad=False).to(device)
     attack_model.loadX(add_features)
     # 将需要添加的邻接矩阵edges载入模型
-    # add_edges = init_add_edges()
+    add_edges = init_add_edges()
     # add_edges = add_edges_by_cluster()
-    add_edges = add_edges_by_class(target_labels)
+    # add_edges = add_edges_by_class(target_labels)
     attack_model.loadEdges(add_edges)
 
     # 下面是attack的过程

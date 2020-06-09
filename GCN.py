@@ -31,7 +31,8 @@ def GraphData() -> Data:
     # edges, _ = torch_geometric.utils.add_remaining_self_loops(edges)
     # print(edges.shape)
     data = Data(x=X, y=Y, edge_index=edges)
-    data.to(torch.device('cuda'))
+    # data.to(torch.device('cuda'))
+    data.to(torch.device('cpu'))
     return data
 
 
@@ -89,7 +90,8 @@ class GCNClassifier(torch.nn.Module):
 
 if __name__ == '__main__':
     data = GraphData()
-    device = torch.device('cuda')
+    # device = torch.device('cuda')
+    device = torch.device('cpu')
     model = GCNClassifier().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.02)
 
