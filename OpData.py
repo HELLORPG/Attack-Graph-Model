@@ -27,7 +27,7 @@ def GetAdj() -> np.matrix:
     adj_csr = OpFile.ReadAdj()
     adj_coo = adj_csr.tocoo()
     links_num = adj_coo.getnnz()
-    print(links_num)
+    # print(links_num)
     # print(adj_coo.getnnz())     # 通过这行语句可以查看非零元素的个数
     # 这里整个数据如果采用密集矩阵的形式，约有2.56TB
     src = adj_coo.row
